@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "vertex.h"
+#include "downhill_simplex.h"
 
 /* 	
 	To start, let's just think of this as an optimization problem. 
@@ -34,12 +36,23 @@ int main(int argc, char **argv) {
 	Pick N_W+1 random-ish vertices and compute the error for each 
 */	
 
+	double w1[] = {1.2,3.1};
+	double w2[] = {2.4,3.5};
+	double w3[] = {6.8,7.9};	
+
+	double e[] = {3,1,2};	
+	
+	vertex_put(simplex[0], w1, e[0]);
+	vertex_put(simplex[1], w2, e[1]);
+	vertex_put(simplex[2], w3, e[2]);
+
 // ==============================================================
 	
 /*	
 	Start loop
 	Sort the vertices and their associated errors
 */	
+	sort_simplex(simplex,N_W+1);
 	
 /*	
 	Check termination conditions (num iterations or standard deviation)

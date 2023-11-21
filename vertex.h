@@ -6,6 +6,8 @@ typedef struct {
 	double error;
 } Vertex;
 
-void vertex_init(Vertex *v, double *weights, double error);
+void vertex_put(Vertex *v, double *weights, double error);
+void vertex_print_weights(Vertex *v, int size);
+int vertex_compare(const void *a, const void *b);
 
 #endif /* VERTEX_H_ */
