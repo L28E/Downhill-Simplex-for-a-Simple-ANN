@@ -1,20 +1,21 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "vertex.h"
 
-void vertex_put(Vertex *v, double *weights, double error){
-	v->weights = weights;
+void vertex_put(Vertex *v, double *weights, double error, int size) {	
 	v->error = error;
+	memcpy( v->weights, weights, size*sizeof(double));
 }
 
-void vertex_print_weights(Vertex *v, int size){	
+void vertex_print_weights(Vertex *v, int size) {
 	printf("[");
-	for (int i = 0; i < size; i++) {     
-        	if (i != 0) printf(", ");
-        	printf("%f", v->weights[i]);     
-    	}  
-    	printf("]\n");   
+	for (int i = 0; i < size; i++) {
+		if (i != 0) printf(", ");
+		printf("%f", v->weights[i]);
+	}
+	printf("]\n");
 }
 
 /*
@@ -22,23 +23,16 @@ void vertex_print_weights(Vertex *v, int size){
  * --------------------
  * compares the errors of two vertices, for use in qsort()
  */
-int vertex_compare(const void *a, const void *b){
-	Vertex *v1 = *(Vertex **)a;
-    	Vertex *v2 = *(Vertex **)b;
-    	
-    	if (v1->error > v2->error) {
-        	return 1;
+int vertex_compare(const void *a, const void *b) {
+	Vertex *v1 = *(Vertex**) a;
+	Vertex *v2 = *(Vertex**) b;
+
+	if (v1->error > v2->error) {
+		return 1;
 	} else if (v1->error < v2->error) {
 		return -1;
 	} else {
 		return 0;
 	}
 }
-
-
-
-
-
-
-
 
