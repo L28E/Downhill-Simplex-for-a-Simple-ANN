@@ -17,6 +17,7 @@
  */
 
 double compute_error(double w[]); 
+void octave_print(Vertex *simplex[], int size);
 
 // Hyper parameters
 const double ALPHA = 1;
@@ -46,9 +47,9 @@ int main(int argc, char **argv) {
 	// Populate the simplex with initial vertices
 	//===========================================	
 	// TODO: Randomize based on search space
-	double w1[] = { 3, 7 };
-	double w2[] = { 2.4, 3.5 };
-	double w3[] = { 6.8, 7.9 };
+	double w1[] = { 0.2, 0.6 };
+	double w2[] = { 0.4, 2.5 };
+	double w3[] = { 1.4, 2.7 };
 	double e[3] = {};		
 	
 	e[0] = compute_error(w1);
@@ -66,7 +67,8 @@ int main(int argc, char **argv) {
 
 		// Sort the vertices by their associated errors
 		sort_simplex(simplex, num_variables + 1);
-		print_simplex(simplex,num_variables);
+		//print_simplex(simplex,num_variables);
+		octave_print(simplex,num_variables);
 
 		// Check termination conditions
 		if (check_terminate(simplex,num_variables+1,tolerance) || iteration >= max_iterations) break;
@@ -114,7 +116,7 @@ int main(int argc, char **argv) {
 			}
 		}else if (reflected->error >= simplex[num_variables]->error){
 			get_expanded(simplex[num_variables], centroid, contracted, num_variables, RHO, compute_error);
-			if (reflected->error < simplex[num_variables]->error) {
+			if (contracted->error < simplex[num_variables]->error) {
 				vertex_put(simplex[num_variables], contracted->weights, contracted->error, num_variables);
 				continue;
 			}
@@ -134,4 +136,19 @@ int main(int argc, char **argv) {
 double compute_error(double w[]) {
 	return pow(w[0], 2) - 2 * w[0] + 1 + 2 * (pow(w[1], 2) - 4 * w[1] + 4);
 }
+
+// Print the weights of the same dimension in one vector so I can plot them in octave
+void octave_print(Vertex *simplex[], int size){
+	printf("plot(");
+		for (int i = 0; i < size; i++) {
+			for (int j=0; j < size+1; j++){
+				if (j == 0) printf("[ ");
+				printf("%f ", simplex[j]->weights[i]);
+				if (j==size) printf("%f ", simplex[0]->weights[i]); // Print out the first weight again to complete the triangle when plotting
+			}
+			printf("], ");
+		}
+		printf("'r','linewidth',1.5)\n");
+}
+
 
