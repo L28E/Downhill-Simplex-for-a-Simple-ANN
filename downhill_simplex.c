@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 #include "downhill_simplex.h"
 #include "vertex.h"
 
@@ -110,6 +111,21 @@ void shrink_simplex(Vertex *simplex[], int size, double sigma, double (*error_fu
 	}
 }
 
+/*
+ * Function:  check_terminate
+ * --------------------
+ * If all errors in the simplex are below the tolerance, return true.
+ * Otherwise return false.
+ *
+ */
+bool check_terminate(Vertex *simplex[], int size, double tolerance) {
+
+	for (int i = 0; i < size; i++) {
+		if (simplex[i]->error >= tolerance) return false;
+	}
+
+	return true;
+}
 
 /*
  * Function:  print_simplex
