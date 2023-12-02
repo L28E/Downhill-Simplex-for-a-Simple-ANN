@@ -1,45 +1,41 @@
-#include <math.h>
-#include <stdio.h>
+/*
+ * mlp_demo.c
+ *
+ * Using the Nelder-Mead algorithm to train a very simple neural network.
+ *
+ * In this demonstration we train a model to represent the current of
+ * a minimum sized nmos1v from the GPDK45 kit as a function of the gate-source
+ * voltage and the drain-source voltage.
+ *
+ */
+
+#include "mlp_demo.h"
+
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
 
-#include "demo_mlp.h"
 #include "vertex.h"
 #include "downhill_simplex.h"
-
-double get_output(double w[], double vds, double vgs);
-double get_batch_training_error(double w[]);
-double get_batch_validation_error(double w[]);
 
 int n = 21;
 
 int main(int argc, char **argv) {
 
-	// Declare and allocate the simplex
+	srand(time(NULL)); // Use current time as seed for random generator
+
 	Vertex *simplex[n + 1];
 	initialize_simplex(simplex, n);
+	randomize_simplex(simplex, n, -1, 1, get_batch_training_error);
 
-	double w[n];
-	double err;
-	srand(time(0)); // Use current time as seed for random generator
-
-	// Populate the simplex with initial vertices. Generate n+1 vectors of n small random values
-	for (int i = 0; i < n + 1; i++) {
-		for (int j = 0; j < n; j++) {
-			w[j] = random_double(-1, 1);
-		}
-		err = get_batch_training_error(w);
-		vertex_put(simplex[i], w, err, n);
-	}
-
-	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 1000, 21,
-			get_batch_training_error, get_batch_validation_error);
+	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 1000, 21, get_batch_training_error, get_batch_validation_error, print_simplex);
 
 	return 0;
 }
 
 /*
- * This function is basically the implementation of the MLP; for this simple demonstration I'll hard code the size of the neural net.
+ * For this simple demonstration I'll just hard code the behaviour of the neural net,
+ * so this function is the implementation of the MLP.
  * We have 2 inputs, 5 hidden neurons, and 1 output neuron. This gives a total of 21 weights.
  */
 double get_output(double w[], double vds, double vgs) {

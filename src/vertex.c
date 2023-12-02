@@ -4,11 +4,23 @@
 
 #include "vertex.h"
 
+/*
+ * Function:  vertex_print_weights
+ * --------------------
+ * Place the given weights and error in the vertex at the given pointer
+ *
+ */
 void vertex_put(Vertex *v, double *weights, double error, int size) {	
 	v->error = error;
 	memcpy( v->weights, weights, size*sizeof(double));
 }
 
+/*
+ * Function:  vertex_print_weights
+ * --------------------
+ * Pretty print the weights of the vertex
+ *
+ */
 void vertex_print_weights(Vertex *v, int size) {
 	printf("[");
 	for (int i = 0; i < size; i++) {
@@ -21,7 +33,8 @@ void vertex_print_weights(Vertex *v, int size) {
 /*
  * Function:  vertex_compare 
  * --------------------
- * compares the errors of two vertices, for use in qsort()
+ * Compares the errors of two vertices, for use in qsort()
+ *
  */
 int vertex_compare(const void *a, const void *b) {
 	Vertex *v1 = *(Vertex**) a;

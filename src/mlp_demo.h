@@ -1,8 +1,9 @@
-#ifndef DEMO_MLP_H_
-#define DEMO_MLP_H_
+#ifndef MLP_DEMO_H_
+#define MLP_DEMO_H_
 
-double get_output(double weights[], double vds, double vgs);
-double get_batch_error(double current[], double voltage[], double weights[]);
+double get_output(double w[], double vds, double vgs);
+double get_batch_training_error(double w[]);
+double get_batch_validation_error(double w[]);
 
 /*
  * I'm using a uniform grid distribution where V_{DS} and V_{GS} are the same vectors
@@ -98,4 +99,4 @@ double validation_current[] = { 1.173E-13, 1.316E-12, 1.603E-11, 1.837E-10,
 		3.702E-10, 4.124E-09, 3.663E-08, 2.185E-07, 9.192E-07, 3.110E-06,
 		8.264E-06, 1.676E-05, 2.753E-05, 3.938E-05, 5.162E-05, 6.388E-05 };
 
-#endif /* DEMO_MLP_H_ */
+#endif /* MLP_DEMO_H_ */
