@@ -44,9 +44,7 @@ int main(int argc, char **argv) {
 	Vertex *expanded = malloc(sizeof(Vertex) + num_variables * sizeof(double));
 	Vertex *contracted = malloc(sizeof(Vertex) + num_variables * sizeof(double));	
 
-	// Populate the simplex with initial vertices
-	//===========================================	
-	// TODO: Randomize based on search space
+	// For test purposes, manually populate the simplex with initial vertices
 	double w1[] = { 0.2, 0.6 };
 	double w2[] = { 0.4, 2.5 };
 	double w3[] = { 1.4, 2.7 };
@@ -55,23 +53,21 @@ int main(int argc, char **argv) {
 	e[0] = compute_error(w1);
 	e[1] = compute_error(w2);
 	e[2] = compute_error(w3);
-	
-	// TODO: Populate simplex programmatically 
+
 	vertex_put(simplex[0], w1, e[0], num_variables);
 	vertex_put(simplex[1], w2, e[1], num_variables);
-	vertex_put(simplex[2], w3, e[2], num_variables);	
-	//===========================================
+	vertex_put(simplex[2], w3, e[2], num_variables);
 
 	while (true) {
 		iteration++;	// Increment the iteration counter
 
 		// Sort the vertices by their associated errors
 		sort_simplex(simplex, num_variables + 1);
-		//print_simplex(simplex,num_variables);
-		octave_print(simplex,num_variables);
+		print_simplex(simplex,num_variables);
+		//octave_print(simplex,num_variables);
 
 		// Check termination conditions
-		if (check_terminate(simplex,num_variables+1,tolerance) || iteration >= max_iterations) break;
+		if (check_terminate_simple(simplex,num_variables+1,tolerance) || iteration >= max_iterations) break;
 
 		// Compute the centroid of all vertices except the worst
 		get_centroid(simplex, centroid, num_variables, compute_error);
