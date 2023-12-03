@@ -84,14 +84,14 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		 Compute the contracted vertex and its error, update the simplex if appropriate
 		 */
 		if (reflected->error < simplex[num_variables]->error) {
-			get_expanded(reflected, centroid, contracted, num_variables, rho,
+			get_contracted(reflected, centroid, contracted, num_variables, rho,
 					training_error_func);
 			if (contracted->error < reflected->error) {
 				vertex_put(simplex[num_variables], contracted->weights, contracted->error, num_variables);
 				continue;
 			}
 		} else if (reflected->error >= simplex[num_variables]->error) {
-			get_expanded(simplex[num_variables], centroid, contracted, num_variables, rho, training_error_func);
+			get_contracted(simplex[num_variables], centroid, contracted, num_variables, rho, training_error_func);
 			if (contracted->error < simplex[num_variables]->error) {
 				vertex_put(simplex[num_variables], contracted->weights, contracted->error, num_variables);
 				continue;

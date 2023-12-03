@@ -19,17 +19,19 @@
 #include "vertex.h"
 #include "downhill_simplex.h"
 
-int n = 21;
+int num_hn = 25;
 
 int main(int argc, char **argv) {
+
+	int n = 4 * num_hn + 1;
 
 	srand(time(NULL)); // Use current time as seed for random generator
 
 	Vertex *simplex[n + 1];
 	initialize_simplex(simplex, n);
-	randomize_simplex(simplex, n, -1, 1, get_batch_training_error);
+	randomize_simplex(simplex, n, -10, 10, get_batch_training_error);
 
-	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 50000, 21,
+	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 1E6, n,
 			get_batch_training_error, get_batch_validation_error, print_err);
 
 	print_test_error(simplex[0]->weights);
@@ -38,31 +40,20 @@ int main(int argc, char **argv) {
 }
 
 /*
- * For this simple demonstration I'll just hard code the behaviour of the neural net,
- * so this function is the implementation of the MLP.
- * We have 2 inputs, 5 hidden neurons, and 1 output neuron. This gives a total of 21 weights.
+ * this function is the implementation of the MLP.
+ * 2 input neurons, 1 output neuron, and a dynamic number of hidden neurons
  */
 double get_output(double w[], double vds, double vgs) {
-	double y;
-	double gamma1, gamma2, gamma3, gamma4, gamma5;
-	double hn1, hn2, hn3, hn4, hn5;
+	double gamma[num_hn];
+	double hn[num_hn];
+	double y = 0;
 
-	// Each hidden neuron input is the weighted sum of the input layer
-	gamma1 = w[0] * vds + w[1] * vgs;
-	gamma2 = w[2] * vds + w[3] * vgs;
-	gamma3 = w[4] * vds + w[5] * vgs;
-	gamma4 = w[6] * vds + w[7] * vgs;
-	gamma5 = w[8] * vds + w[9] * vgs;
-
-	// Each hidden neuron uses a biased sigmoidal activation function
-	hn1 = 1 / (1 + exp(-1 * (gamma1 - w[10])));
-	hn2 = 1 / (1 + exp(-1 * (gamma2 - w[11])));
-	hn3 = 1 / (1 + exp(-1 * (gamma3 - w[12])));
-	hn4 = 1 / (1 + exp(-1 * (gamma4 - w[13])));
-	hn5 = 1 / (1 + exp(-1 * (gamma5 - w[14])));
-
-	// Output is the weighted sum of the hidden layer outputs and a bias
-	return w[15] * hn1 + w[16] * hn2 + w[17] * hn3 + w[18] * hn4 + w[19] * hn5 + w[20];
+	for (int i = 0; i < num_hn; i++) {
+		gamma[i] = w[2 * i] * vds + w[2 * i + 1] * vgs;	// Each hidden neuron input is the weighted sum of the input layer
+		hn[i] = 1 / (1 + exp(-1 * (gamma[i] - w[num_hn*2+i]))); // Each hidden neuron uses a biased sigmoidal activation function
+		y += w[3 * num_hn + i] * hn[i]; // Output is the weighted sum of the hidden layer outputs and a bias
+	}
+	return y + w[4*num_hn];
 }
 
 double get_batch_training_error(double w[]) {
