@@ -26,7 +26,7 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		double sigma, double tolerance, double max_iterations,
 		int num_variables, double (*training_error_func)(double[]),
 		double (*validation_error_func)(double[]),
-		void (*print_func)(Vertex *simplex[], int size)) {
+		void (*print_func)(Vertex *simplex[], int size, int iteration)) {
 
 	int iteration = 0;
 
@@ -41,7 +41,7 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 
 		// Sort the vertices by their associated errors
 		sort_simplex(simplex, num_variables + 1);
-		print_func(simplex, num_variables);
+		print_func(simplex, num_variables, iteration);
 
 		// Check termination conditions
 		if (check_terminate(simplex, num_variables + 1, tolerance, validation_error_func) || iteration >= max_iterations)
@@ -294,7 +294,7 @@ bool check_terminate(Vertex *simplex[], int size, double tolerance,
  * pretty print the simplex
  *
  */
-void print_simplex(Vertex *simplex[], int size) {
+void print_simplex(Vertex *simplex[], int size, int iteration) {
 
 	// Printing weights
 	printf("[");
@@ -330,24 +330,26 @@ void print_simplex(Vertex *simplex[], int size) {
 /*
  * Function:  octave_print
  * --------------------
- * Formulates MATLAB/Octave commands to plot the current simplex
- * Suitable only for 2 variable problems
+ * Formulates MATLAB/Octave vectors to plot the current simplex
+ * ONLY SUITABLE FOR 2 VARIABLE PROBLEMS
  *
  */
 
-void octave_print(Vertex *simplex[], int size) {
-	printf("plot(");
+void octave_print(Vertex *simplex[], int size, int iteration) {	
 	for (int i = 0; i < size; i++) {
+		if (i == 0){
+			printf("X(%d,:)=[ ", iteration);
+		}else if (i == 1){
+			printf("Y(%d,:)=[ ", iteration);
+		}
+
 		for (int j = 0; j < size + 1; j++) {
-			if (j == 0)
-				printf("[ ");
 			printf("%f ", simplex[j]->weights[i]);
 			if (j == size)
 				printf("%f ", simplex[0]->weights[i]); // Print out the first weight again to complete the triangle when plotting
 		}
-		printf("], ");
-	}
-	printf("'r','linewidth',1.5)\n");
+		printf("];\n");
+	}	
 }
 
 /*

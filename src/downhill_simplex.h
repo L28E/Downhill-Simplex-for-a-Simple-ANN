@@ -19,8 +19,8 @@ void get_contracted(Vertex *contraction_point, Vertex *centroid,
 		double (*error_func)(double[]));
 void shrink_simplex(Vertex *simplex[], int size, double sigma,
 		double (*error_func)(double[]));
-void print_simplex(Vertex *simplex[], int size);
-void octave_print(Vertex *simplex[], int size);
+void print_simplex(Vertex *simplex[], int size, int iteration);
+void octave_print(Vertex *simplex[], int size, int iteration);
 bool check_terminate_simple(Vertex *simplex[], int size, double tolerance);
 bool check_terminate(Vertex *simplex[], int size, double tolerance,
 		double (*validation_error_func)(double[]));
@@ -29,6 +29,6 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		double sigma, double tolerance, double max_iterations,
 		int num_variables, double (*training_error_func)(double[]),
 		double (*validation_error_func)(double[]),
-		void (*print_func)(Vertex *simplex[], int size));
+		void (*print_func)(Vertex *simplex[], int size, int iteration));
 
 #endif /* DOWNHILL_SIMPLEX_H_ */
