@@ -2,9 +2,12 @@
 #define MLP_DEMO_H_
 
 double get_output(double w[], double vds, double vgs);
-double get_batch_training_error(double w[]);
-double get_batch_validation_error(double w[]);
+double get_training_error(double w[]);
+double get_validation_error(double w[]);
 void print_test_error(double w[]);
+double compute_batch_error(int size, double y_max, double y_min,
+		double output[], double input[], double input_min,
+		double input_max, double output_min, double output_max, double w[]);
 
 /*
  * I'm using a uniform grid distribution where V_{DS} and V_{GS} are the same vectors
@@ -14,16 +17,20 @@ void print_test_error(double w[]);
 int training_size = 16;
 double training_current_min = 3.516E-13;
 double training_current_max = 7.572E-05;
+double training_voltage_min = -1.000E-01;
+double training_voltage_max = 1.175E+00;
 
 int validation_size = 14;
 double validation_current_min = 7.876E-13;
 double validation_current_max = 6.388E-05;
+double validation_voltage_min = -5.000E-03;
+double validation_voltage_max = 1.100E+00;
 
 int test_size = 12;
 
 double training_voltage[] = { -1.000E-01, -1.500E-02, 7.000E-02, 1.550E-01,
 		2.400E-01, 3.250E-01, 4.100E-01, 4.950E-01, 5.800E-01, 6.650E-01,
-		7.500E-01, 8.350E-01, 9.200E-01, 1.005E-03, 1.090E-03, 1.175E-03 };
+		7.500E-01, 8.350E-01, 9.200E-01, 1.005E+00, 1.090E+00, 1.175E+00 };
 
 double training_current[] = { 2.346E-12, 1.583E-11, 1.850E-10, 2.014E-09,
 		1.765E-08, 1.060E-07, 4.531E-07, 1.545E-06, 3.982E-06, 7.484E-06,

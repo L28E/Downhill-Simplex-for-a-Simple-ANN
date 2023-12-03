@@ -66,7 +66,7 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		 Compute the expanded vertex and its error, update the simplex if appropriate
 		 */
 		if (reflected->error < simplex[0]->error) {
-			get_expanded(simplex[0], centroid, expanded, num_variables, gamma, training_error_func);
+			get_expanded(reflected, centroid, expanded, num_variables, gamma, training_error_func);
 			if (expanded->error < reflected->error) {
 				vertex_put(simplex[num_variables], expanded->weights, expanded->error, num_variables);
 				continue;
@@ -99,7 +99,7 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		}
 
 		// All else fails, decrease the size of the simplex, replacing all the points except for the best one.
-		shrink_simplex(simplex, num_variables + 1, sigma, training_error_func);
+		shrink_simplex(simplex, num_variables, sigma, training_error_func);
 
 	}
 }
@@ -152,6 +152,8 @@ void sort_simplex(Vertex *simplex[], int size) {
  * --------------------
  * Computes the centroid of the simplex, omitting the last (and therefore the worst) vertex
  * 
+ * size: The number of variables
+ *
  */
 void get_centroid(Vertex *simplex[], Vertex *centroid, int size,
 		double (*error_func)(double[])) {
@@ -175,6 +177,8 @@ void get_centroid(Vertex *simplex[], Vertex *centroid, int size,
  * --------------------
  * Computes the reflected vertex
  * 
+ * size: The number of variables
+ *
  */
 void get_reflected(Vertex *worst, Vertex *centroid, Vertex *reflected, int size,
 		double alpha, double (*error_func)(double[])) {
@@ -195,15 +199,17 @@ void get_reflected(Vertex *worst, Vertex *centroid, Vertex *reflected, int size,
  * --------------------
  * Computes the expanded vertex
  *
+ * size: The number of variables
+ *
  */
-void get_expanded(Vertex *best, Vertex *centroid, Vertex *expanded, int size,
+void get_expanded(Vertex *reflected, Vertex *centroid, Vertex *expanded, int size,
 		double gamma, double (*error_func)(double[])) {
 	double weights[size];
 	double error;
 
 	for (int i = 0; i < size; i++) {
 		weights[i] = centroid->weights[i]
-				+ gamma * (best->weights[i] - centroid->weights[i]);
+				+ gamma * (reflected->weights[i] - centroid->weights[i]);
 	}
 
 	error = error_func(weights);
@@ -214,6 +220,8 @@ void get_expanded(Vertex *best, Vertex *centroid, Vertex *expanded, int size,
  * Function:  get_contracted
  * --------------------
  * Computes a contracted vertex
+ *
+ * size: The number of variables
  *
  */
 void get_contracted(Vertex *contraction_point, Vertex *centroid,
@@ -236,13 +244,15 @@ void get_contracted(Vertex *contraction_point, Vertex *centroid,
  * --------------------
  * Computes a shrunken simplex
  *
+ * size: The number of variables
+ *
  */
 void shrink_simplex(Vertex *simplex[], int size, double sigma,
 		double (*error_func)(double[])) {
 	double weights[size];
 	double error;
 
-	for (int i = 0; i < size; i++) {
+	for (int i = 1; i < size+1; i++) {
 		for (int j = 0; j < size; j++) {
 			weights[j] = simplex[0]->weights[j]
 					+ sigma * (simplex[i]->weights[j] - simplex[0]->weights[j]);
@@ -279,9 +289,12 @@ bool check_terminate_simple(Vertex *simplex[], int size, double tolerance) {
  */
 bool check_terminate(Vertex *simplex[], int size, double tolerance,
 	double (*validation_error_func)(double[])) {
+	double v_err;
 
 	for (int i = 0; i < size; i++) {
-		if (validation_error_func(simplex[i]->weights) >= tolerance)
+		v_err = validation_error_func(simplex[i]->weights);
+		//printf("Validation Error: %E\n",v_err);
+		if ( v_err >= tolerance)
 			return false;
 	}
 
@@ -360,7 +373,9 @@ void octave_print(Vertex *simplex[], int size, int iteration) {
  */
 
 void print_err(Vertex *simplex[], int size, int iteration){
-	printf("Iteration: %d, Error: %E\n",iteration,simplex[0]->error);
+	//printf("Iteration: %d, Error: %E\n",iteration,simplex[0]->error);
+	printf("\rIteration: %d, Error: %E",iteration,simplex[0]->error);
+	fflush(stdout);
 }
 
 /*
