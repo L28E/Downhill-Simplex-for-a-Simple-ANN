@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <stdio.h>
 
 #include "vertex.h"
 #include "downhill_simplex.h"
@@ -28,7 +29,10 @@ int main(int argc, char **argv) {
 	initialize_simplex(simplex, n);
 	randomize_simplex(simplex, n, -1, 1, get_batch_training_error);
 
-	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 1000, 21, get_batch_training_error, get_batch_validation_error, print_simplex);
+	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 50000, 21,
+			get_batch_training_error, get_batch_validation_error, print_err);
+
+	print_test_error(simplex[0]->weights);
 
 	return 0;
 }
@@ -65,30 +69,50 @@ double get_batch_training_error(double w[]) {
 	double *y_hat = training_current;
 	double *x = training_voltage;
 	double y, err = 0;
+	double y_min = training_current_min;
+	double y_max = training_current_max;
 	int size = training_size;
 
 	for (int i = 0; i < size; i++) {				// VDS sweep
 		for (int j = 0; j < size; j++) {			// VGS sweep
 			y = get_output(w, x[i], x[j]);
-			err += pow(y - y_hat[i * size + j], 2); // Squared error
+			err += pow((y - y_hat[i * size + j])/(y_max-y_min), 2);
 		}
 	}
 
-	return err / size; // Mean Square Error
+	return sqrt(err / size);
 }
 
 double get_batch_validation_error(double w[]) {
 	double *y_hat = validation_current;
 	double *x = validation_voltage;
 	double y, err = 0;
+	double y_min = validation_current_min;
+	double y_max = validation_current_max;
 	int size = validation_size;
 
 	for (int i = 0; i < size; i++) {				// VDS sweep
 		for (int j = 0; j < size; j++) {			// VGS sweep
 			y = get_output(w, x[i], x[j]);
-			err += pow(y - y_hat[i * size + j], 2); // Squared error
+			err += pow((y - y_hat[i * size + j])/(y_max-y_min), 2);
 		}
 	}
 
-	return err / size; // Mean Square Error
+	return sqrt(err / size);
+}
+
+void print_test_error(double w[]) {
+	// TODO: Correct this calculation
+	double *y_hat = test_current;
+	double *x = test_voltage;
+	double y, err = 0;
+	int size = test_size;
+
+	for (int i = 0; i < size; i++) {				// VDS sweep
+		for (int j = 0; j < size; j++) {			// VGS sweep
+			y = get_output(w, x[i], x[j]);
+			err = (y - y_hat[i * size + j]) / y_hat[i * size + j] * 100; // Percent error
+			printf("Test Sample %d Error (%%): %f\n", i * size + j + 1, err);
+		}
+	}
 }

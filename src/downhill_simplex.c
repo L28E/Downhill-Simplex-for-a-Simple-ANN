@@ -353,6 +353,17 @@ void octave_print(Vertex *simplex[], int size, int iteration) {
 }
 
 /*
+ * Function:  print_err
+ * --------------------
+ * Print the iteration and the current best training error
+ *
+ */
+
+void print_err(Vertex *simplex[], int size, int iteration){
+	printf("Iteration: %d, Error: %E\n",iteration,simplex[0]->error);
+}
+
+/*
  * Function:  random_double
  * --------------------
  * Generates a random double between the given minimum and maximum

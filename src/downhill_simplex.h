@@ -21,6 +21,7 @@ void shrink_simplex(Vertex *simplex[], int size, double sigma,
 		double (*error_func)(double[]));
 void print_simplex(Vertex *simplex[], int size, int iteration);
 void octave_print(Vertex *simplex[], int size, int iteration);
+void print_err(Vertex *simplex[], int size, int iteration);
 bool check_terminate_simple(Vertex *simplex[], int size, double tolerance);
 bool check_terminate(Vertex *simplex[], int size, double tolerance,
 		double (*validation_error_func)(double[]));
