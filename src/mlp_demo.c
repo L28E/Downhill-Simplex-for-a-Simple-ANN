@@ -19,7 +19,7 @@
 #include "vertex.h"
 #include "downhill_simplex.h"
 
-int num_hn = 4;
+int num_hn = 60;
 double min_scale_y = -1;
 double max_scale_y = 1;
 double min_scale_x = -1;
@@ -35,9 +35,10 @@ int main(int argc, char **argv) {
 	initialize_simplex(simplex, n);
 	randomize_simplex(simplex, n, -1, 1, get_training_error);
 
-	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 1E6, n,
-			get_training_error, get_validation_error, print_err);
+	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.05, -1, n, get_training_error, get_validation_error, print_err);
+	//downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.01, 1E6, n, get_training_error, get_validation_error, print_err);
 
+	print_simplex(simplex, n, 0);
 	//print_test_error(simplex[0]->weights);
 
 	return 0;

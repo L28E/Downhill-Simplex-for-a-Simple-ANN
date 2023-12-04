@@ -4,6 +4,8 @@
 #include "downhill_simplex.h"
 #include "vertex.h"
 
+double v_err = 0;
+
 /*
  * Function:  downhill_simplex
  * --------------------
@@ -44,7 +46,7 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		print_func(simplex, num_variables, iteration);
 
 		// Check termination conditions
-		if (check_terminate(simplex, num_variables + 1, tolerance, validation_error_func) || iteration >= max_iterations)
+		if (check_terminate(simplex, num_variables + 1, tolerance, validation_error_func) || (iteration >= max_iterations && max_iterations != -1))
 			break;
 
 		// Compute the centroid of all vertices except the worst
@@ -284,21 +286,17 @@ bool check_terminate_simple(Vertex *simplex[], int size, double tolerance) {
  * Function:  check_terminate
  * --------------------
  * Checks the tolerance against the validation error, as opposed to the training error.
- * That means it has to be computed for each vector in the simplex
+ * We'll just compute it for the best vertex
  *
  */
 bool check_terminate(Vertex *simplex[], int size, double tolerance,
-	double (*validation_error_func)(double[])) {
-	double v_err;
+		double (*validation_error_func)(double[])) {
 
-	for (int i = 0; i < size; i++) {
-		v_err = validation_error_func(simplex[i]->weights);
-		//printf("Validation Error: %E\n",v_err);
-		if ( v_err >= tolerance)
-			return false;
-	}
-
-	return true;
+	v_err = validation_error_func(simplex[0]->weights);
+	if (v_err >= tolerance)
+		return false;
+	else
+		return true;
 }
 
 /*
@@ -373,8 +371,7 @@ void octave_print(Vertex *simplex[], int size, int iteration) {
  */
 
 void print_err(Vertex *simplex[], int size, int iteration){
-	//printf("Iteration: %d, Error: %E\n",iteration,simplex[0]->error);
-	printf("\rIteration: %d, Error: %E",iteration,simplex[0]->error);
+	printf("\rIteration: %d, Validation Error: %E, Training Error: %E",iteration, v_err,simplex[0]->error);
 	fflush(stdout);
 }
 

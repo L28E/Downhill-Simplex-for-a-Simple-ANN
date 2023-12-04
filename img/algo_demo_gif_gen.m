@@ -11,7 +11,7 @@ step_size=0.1;
 [W1,W2] = meshgrid(minW:step_size:maxW, minW:step_size:maxW);
 E = W1.^2-2.*W1+1+2*(W2.^2-4.*W2+4);
 
-num_simplexes = 13; # The number of iterations +1 for the initial simplex
+num_simplexes = 18; # The number of iterations +1 for the initial simplex
 size = 2; # The size of each vertex i.e. tje number of variables
 
 X = zeros(num_simplexes,size+1+1); # +1 for size+1 vertices and +1 to replot the first  
