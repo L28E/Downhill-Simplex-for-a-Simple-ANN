@@ -36,7 +36,8 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 	Vertex *centroid = malloc(sizeof(Vertex) + num_variables * sizeof(double));
 	Vertex *reflected = malloc(sizeof(Vertex) + num_variables * sizeof(double));
 	Vertex *expanded = malloc(sizeof(Vertex) + num_variables * sizeof(double));
-	Vertex *contracted = malloc(sizeof(Vertex) + num_variables * sizeof(double));
+	Vertex *contracted = malloc(
+			sizeof(Vertex) + num_variables * sizeof(double));
 
 	while (true) {
 		iteration++;	// Increment the iteration counter
@@ -46,7 +47,9 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		print_func(simplex, num_variables, iteration);
 
 		// Check termination conditions
-		if (check_terminate(simplex, num_variables + 1, tolerance, validation_error_func) || (iteration >= max_iterations && max_iterations != -1))
+		if (check_terminate(simplex, num_variables + 1, tolerance,
+				validation_error_func)
+				|| (iteration >= max_iterations && max_iterations != -1))
 			break;
 
 		// Compute the centroid of all vertices except the worst
@@ -56,8 +59,10 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		get_reflected(simplex[num_variables], centroid, reflected,
 				num_variables, alpha, training_error_func);
 
-		if (reflected->error >= simplex[0]->error && reflected->error < simplex[num_variables - 1]->error) {
-			vertex_put(simplex[num_variables], reflected->weights, reflected->error, num_variables);
+		if (reflected->error >= simplex[0]->error
+				&& reflected->error < simplex[num_variables - 1]->error) {
+			vertex_put(simplex[num_variables], reflected->weights,
+					reflected->error, num_variables);
 			continue;
 		}
 
@@ -68,12 +73,15 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 		 Compute the expanded vertex and its error, update the simplex if appropriate
 		 */
 		if (reflected->error < simplex[0]->error) {
-			get_expanded(reflected, centroid, expanded, num_variables, gamma, training_error_func);
+			get_expanded(reflected, centroid, expanded, num_variables, gamma,
+					training_error_func);
 			if (expanded->error < reflected->error) {
-				vertex_put(simplex[num_variables], expanded->weights, expanded->error, num_variables);
+				vertex_put(simplex[num_variables], expanded->weights,
+						expanded->error, num_variables);
 				continue;
 			} else {
-				vertex_put(simplex[num_variables], reflected->weights, reflected->error, num_variables);
+				vertex_put(simplex[num_variables], reflected->weights,
+						reflected->error, num_variables);
 				continue;
 			}
 		}
@@ -89,13 +97,16 @@ void downhill_simplex(Vertex *simplex[], double alpha, double gamma, double rho,
 			get_contracted(reflected, centroid, contracted, num_variables, rho,
 					training_error_func);
 			if (contracted->error < reflected->error) {
-				vertex_put(simplex[num_variables], contracted->weights, contracted->error, num_variables);
+				vertex_put(simplex[num_variables], contracted->weights,
+						contracted->error, num_variables);
 				continue;
 			}
 		} else if (reflected->error >= simplex[num_variables]->error) {
-			get_contracted(simplex[num_variables], centroid, contracted, num_variables, rho, training_error_func);
+			get_contracted(simplex[num_variables], centroid, contracted,
+					num_variables, rho, training_error_func);
 			if (contracted->error < simplex[num_variables]->error) {
-				vertex_put(simplex[num_variables], contracted->weights, contracted->error, num_variables);
+				vertex_put(simplex[num_variables], contracted->weights,
+						contracted->error, num_variables);
 				continue;
 			}
 		}
@@ -204,8 +215,8 @@ void get_reflected(Vertex *worst, Vertex *centroid, Vertex *reflected, int size,
  * size: The number of variables
  *
  */
-void get_expanded(Vertex *reflected, Vertex *centroid, Vertex *expanded, int size,
-		double gamma, double (*error_func)(double[])) {
+void get_expanded(Vertex *reflected, Vertex *centroid, Vertex *expanded,
+		int size, double gamma, double (*error_func)(double[])) {
 	double weights[size];
 	double error;
 
@@ -254,7 +265,7 @@ void shrink_simplex(Vertex *simplex[], int size, double sigma,
 	double weights[size];
 	double error;
 
-	for (int i = 1; i < size+1; i++) {
+	for (int i = 1; i < size + 1; i++) {
 		for (int j = 0; j < size; j++) {
 			weights[j] = simplex[0]->weights[j]
 					+ sigma * (simplex[i]->weights[j] - simplex[0]->weights[j]);
@@ -346,11 +357,11 @@ void print_simplex(Vertex *simplex[], int size, int iteration) {
  *
  */
 
-void octave_print(Vertex *simplex[], int size, int iteration) {	
+void octave_print(Vertex *simplex[], int size, int iteration) {
 	for (int i = 0; i < size; i++) {
-		if (i == 0){
+		if (i == 0) {
 			printf("X(%d,:)=[ ", iteration);
-		}else if (i == 1){
+		} else if (i == 1) {
 			printf("Y(%d,:)=[ ", iteration);
 		}
 
@@ -360,18 +371,57 @@ void octave_print(Vertex *simplex[], int size, int iteration) {
 				printf("%f ", simplex[0]->weights[i]); // Print out the first weight again to complete the triangle when plotting
 		}
 		printf("];\n");
-	}	
+	}
+}
+
+/*
+ * Function:  print_weights
+ * --------------------
+ * Print the weights of one vertex
+ *
+ */
+
+void print_weights(Vertex *simplex[], int size, int iteration, int index) {
+	for (int j = 0; j < size; j++) {
+		if (j == 0)
+			printf("[ ");
+		if (j != 0)
+			printf(", ");
+
+		printf("%f", simplex[index]->weights[j]);
+
+		if (j == size - 1) {
+			printf("]\n");
+		}
+	}
 }
 
 /*
  * Function:  print_err
  * --------------------
+ * Print the iteration and the current best training error on a new line each time
+ * Best to pipe this output to a file *
+ *
+ */
+
+void print_err(Vertex *simplex[], int size, int iteration) {
+	if (iteration == 1){
+		printf("Iteration, Validation Error, Training Error\n");
+	}
+
+	printf("%d, %E, %E\n", iteration, v_err, simplex[0]->error);
+}
+
+/*
+ * Function:  print_err_in_place
+ * --------------------
  * Print the iteration and the current best training error
  *
  */
 
-void print_err(Vertex *simplex[], int size, int iteration){
-	printf("\rIteration: %d, Validation Error: %E, Training Error: %E",iteration, v_err,simplex[0]->error);
+void print_err_in_place(Vertex *simplex[], int size, int iteration) {
+	printf("\rIteration: %d, Validation Error: %E, Training Error: %E",
+			iteration, v_err, simplex[0]->error);
 	fflush(stdout);
 }
 

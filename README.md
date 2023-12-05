@@ -3,7 +3,7 @@ Assignment 3 for ELEC 5404. An implementation of the Nelder–Mead method, and u
 
 The Nelder–Mead method is a numerical method for optimization, which works by moving a simplex through the variable space towards the minimum of an objective function:
 
-![Finding min of Rosenbrock function](img/rosenbrock.gif)
+![Finding min of arbitrary function](img/algo_demo.gif) ![Finding min of Rosenbrock function](img/rosenbrock.gif)
 
 You can use it to train a neural network by minimizing the error function. As a simple demonstration, we'll model a simple non-linear 1 variable function. 
 

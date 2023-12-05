@@ -1,10 +1,13 @@
 CC ?= gcc
 
-all: mlp_demo algo_demo
+all: mlp_demo algo_demo simple_mlp_demo
 
 # ============================================
 # Compile and build  
 # ============================================
+simple_mlp_demo: simple_mlp_demo.o vertex.o downhill_simplex.o
+	$(CC) -o simple_mlp_demo.out simple_mlp_demo.o vertex.o downhill_simplex.o -lm
+
 mlp_demo: mlp_demo.o vertex.o downhill_simplex.o
 	$(CC) -o mlp_demo.out mlp_demo.o vertex.o downhill_simplex.o -lm
 
@@ -12,6 +15,9 @@ algo_demo: algo_demo.o vertex.o downhill_simplex.o
 	$(CC) -o algo_demo.out algo_demo.o vertex.o downhill_simplex.o -lm
 
 # ---------------------------------------------
+
+simple_mlp_demo.o: simple_mlp_demo.c mlp_demo.h vertex.h downhill_simplex.h
+	$(CC) -c simple_mlp_demo.c
 
 mlp_demo.o: mlp_demo.c mlp_demo.h vertex.h downhill_simplex.h
 	$(CC) -c mlp_demo.c
