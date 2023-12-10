@@ -3,7 +3,7 @@ x_training = linspace(-14.7,25.7,200);
 x_validation = linspace(-15,25,200);
 x_testing = linspace(-14.3,25.3,200);
 
-f = @(x) 0.5 - 2./(1+e.^(-(4*x+28))) + 6./(1+e.^(-(0.8*x-4)))
+f = @(x) 0.5 - 2./(1+e.^(-(4*x+28))) + 6./(1+e.^(-(0.8*x-4))) - 1./(1+e.^(-(1.5*x-22.5)))
 y_training=f(x_training);
 y_validation=f(x_validation);
 y_testing=f(x_testing);

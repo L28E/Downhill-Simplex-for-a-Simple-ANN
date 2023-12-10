@@ -18,7 +18,7 @@
 #include "vertex.h"
 #include "downhill_simplex.h"
 
-int num_hn = 2;
+int num_hn = 3;
 double min_scale_y = -1;
 double max_scale_y = 1;
 double min_scale_x = -1;
