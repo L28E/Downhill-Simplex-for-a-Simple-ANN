@@ -37,7 +37,6 @@ int main(int argc, char **argv) {
 	downhill_simplex(simplex, 1, 2, 0.5, 0.5, 0.0001, -1, n, get_training_error,
 			get_validation_error, print_err);
 
-
 	printf("\nSolution: ");
 	print_weights(simplex, n, 0, 0);
 
@@ -45,20 +44,7 @@ int main(int argc, char **argv) {
 
 	print_test_error(simplex[0]->weights);
 
-
-
 	return 0;
-}
-
-double scale(double x, double x_min, double x_max, double x_hat_min,
-		double x_hat_max) {
-	return x_hat_min + (x - x_min) / (x_max - x_min) * (x_hat_max - x_hat_min);
-}
-
-double unscale(double x_hat, double x_hat_min, double x_hat_max, double x_min,
-		double x_max) {
-	return x_min
-			+ (x_hat - x_hat_min) / (x_hat_max - x_hat_min) * (x_max - x_min);
 }
 
 /*
